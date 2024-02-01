@@ -1,26 +1,32 @@
+// App.tsx
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useSelector } from 'react-redux';
+import Login from './components/Login';
+import Register from './components/Register';
+import ChatRoom from './components/ChatRoom';
 
-function App() {
+interface User {
+  id: number;
+  username: string;
+  password: string;
+}
+
+const App: React.FC = () => {
+  const user: User | null = useSelector((state: { user: User | null }) => state.user);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {user ? (
+        <ChatRoom />
+      ) : (
+        <div>
+          <Login />
+          <hr />
+          <Register />
+        </div>
+      )}
     </div>
   );
-}
+};
 
 export default App;
