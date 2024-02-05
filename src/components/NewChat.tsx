@@ -9,81 +9,60 @@ interface User {
   password: string;
 }
 
-interface SearchResult {
-  id: number;
-  username: string;
-}
-
 const API_URL = 'https://localhost:7281';
 
 const NewChat: React.FC = () => {
   const user: User | null = useSelector((state: { user: User | null }) => state.user);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [selectedUser, setSelectedUser] = useState<SearchResult | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const fetchSearchResults = async () => {
+    const fetchUsers = async () => {
       try {
-        if (searchTerm.trim() !== '') {
-          const response = await axios.get(`${API_URL}/user/${searchTerm}`);
-          setSearchResults(response.data);
-        } else {
-          setSearchResults([]);
-        }
+        const response = await axios.get(`${API_URL}/user`);
+        setUsers(response.data);
       } catch (error) {
-        console.error('Error fetching search results:', error);
+        console.error('Error fetching users:', error);
       }
     };
 
-    fetchSearchResults();
-  }, [searchTerm]);
+    fetchUsers();
+  }, []);
 
-  const handleUserSelect = (result: SearchResult) => {
-    setSelectedUser(result);
+  const handleUserSelect = (userId: number) => {
+    const selected = users.find((user) => user.id === userId);
+    setSelectedUser(selected || null);
   };
 
   const handleChatCreation = async () => {
     try {
-      if (selectedUser) {
-        // Create a new chat with the selected user
-        const response = await axios.post(`${API_URL}/chats`, {
-          participants: [user?.id, selectedUser.id],
-        });
-
-        // Handle the response, e.g., redirect to the new chat page
+      if (selectedUser && user) {
+        const response = await axios.post(`${API_URL}/chat/${user.id},${selectedUser.id}`);
+  
         console.log('New chat created:', response.data);
       }
     } catch (error) {
       console.error('Error creating chat:', error);
     }
   };
+  
+  
 
   return (
     <div>
       <h2>New Chat</h2>
       <form onSubmit={(e) => { e.preventDefault(); handleChatCreation(); }}>
         <label>
-          Search for a user:
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+          Select a user:
+          <select onChange={(e) => handleUserSelect(+e.target.value)}>
+            <option value="">Select a user</option>
+            {users.map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.username}
+              </option>
+            ))}
+          </select>
         </label>
-        {searchResults.length > 0 && (
-          <div>
-            <label>Select a user:</label>
-            <select onChange={(e) => handleUserSelect(searchResults.find((user) => user.id === +e.target.value)!)}>
-              <option value="" disabled>Select a user</option>
-              {searchResults.map((result) => (
-                <option key={result.id} value={result.id} selected={selectedUser?.id === result.id}>
-                  {result.username}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
         <button type="submit" disabled={!selectedUser}>Start Chat</button>
       </form>
     </div>

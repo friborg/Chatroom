@@ -10,16 +10,9 @@ interface User {
   password: string;
 }
 
-interface Message {
-  text: string;
-  sentFrom: string;
-  timeStamp: string;
-}
-
 interface Chat {
   id: number;
-  participants: User[];
-  messages: Message[];
+  participants: User[]
 }
 
 const API_URL = 'https://localhost:7281';
@@ -31,7 +24,7 @@ const ChatRoom: React.FC = () => {
   useEffect(() => {
     const fetchChats = async () => {
       try {
-        const response = await axios.get(`${API_URL}/chats/${user?.id}`);
+        const response = await axios.get(`${API_URL}/chat/${user?.id}`);
         setChats(response.data);
       } catch (error) {
         console.error('Error fetching chats:', error);
@@ -56,14 +49,6 @@ const ChatRoom: React.FC = () => {
             <ul>
               {chat.participants.map((participant) => (
                 <li key={participant.id}>{participant.username}</li>
-              ))}
-            </ul>
-            <h3>Messages:</h3>
-            <ul>
-              {chat.messages.map((message, index) => (
-                <li key={index}>
-                  <strong>{message.sentFrom}:</strong> {message.text} (Sent at {message.timeStamp})
-                </li>
               ))}
             </ul>
           </div>
