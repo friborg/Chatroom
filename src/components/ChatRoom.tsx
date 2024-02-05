@@ -1,4 +1,3 @@
-// src/components/Chat.tsx
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -10,9 +9,16 @@ interface User {
   password: string;
 }
 
+interface Message {
+  id: number;
+  text: string;
+  user: User;
+}
+
 interface Chat {
   id: number;
-  participants: User[]
+  participants: User[];
+  messages: Message[];
 }
 
 const API_URL = 'https://localhost:7281';
@@ -49,6 +55,11 @@ const ChatRoom: React.FC = () => {
             <ul>
               {chat.participants.map((participant) => (
                 <li key={participant.id}>{participant.username}</li>
+              ))}
+            </ul>
+            <ul>
+              {chat.messages.map((message) => (
+                <li key={message.id}>Message:{message.text}</li>
               ))}
             </ul>
           </div>

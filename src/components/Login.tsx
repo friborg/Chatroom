@@ -21,23 +21,26 @@ const Login: React.FC = () => {
             if (username.trim() === '' || password.trim() === '') {
                 alert('Please enter a username and a password.');
                 return;
-            }
-
-            const response = await axios.get(`${API_URL}/user/${username}`)
-            const user: User = response.data;
-
-            if (user && user.password === password) {
-                dispatch({ type: 'SET_USER', payload: user });
-                console.log('Login successful. User:', user)
-            }
-            else {
-                alert('Invalid username and password combo')
+            }    
+            const response = await axios.get(`${API_URL}/user/${username}`);
+    
+            if (response.status === 200) {
+                const user: User = response.data;
+    
+                if (user && user.password === password) {
+                    dispatch({ type: 'SET_USER', payload: user });
+                    console.log('Login successful. User:', user);
+                } else {
+                    alert('Invalid username and password combo');
+                }
+            } else {
+                alert('User not found');
             }
         } catch (error) {
             console.error('Error during login:', error);
         }
-
     };
+    
 
     return (
         <div>

@@ -38,15 +38,19 @@ const NewChat: React.FC = () => {
     try {
       if (selectedUser && user) {
         const response = await axios.post(`${API_URL}/chat/${user.id},${selectedUser.id}`);
-  
-        console.log('New chat created:', response.data);
+
+        if (response.status === 201) {
+          console.log('New chat created:', response.data);
+        } else {
+          console.error('Unexpected response status:', response.status);
+        }
       }
     } catch (error) {
       console.error('Error creating chat:', error);
     }
   };
-  
-  
+
+
 
   return (
     <div>
